@@ -1,20 +1,26 @@
 #include <Arduino.h>
 
-const int leftSensorIn;
-const int rightSensorIn;
-const int leftMotorOut;
-const int rightMotorOut;
+const int leftSensorIn =2;
+const int rightSensorIn =3;
+const int leftMotorOut = 10;
+const int rightMotorOut =11;
+
+int intgError;
 
 
 // put function declarations here:
 int myFunction(int, int);
-
-int readSensors(int, int)
+int readSensors(int, int);
+void integrateError(int);
+void driveMotors(int);
 
 void setup() {
   // put your setup code here, to run once:
-  int result = myFunction(2, 3);
   Serial.begin(9600);
+  pinMode(leftSensorIn, INPUT);
+  pinMode(rightSensorIn, INPUT);
+  pinMode(leftMotorOut, OUTPUT);
+  pinMode(rightMotorOut, OUTPUT);
 }
 
 void loop() {
@@ -44,5 +50,27 @@ int readSensors(int leftSensor, int rightSensor){
   }
   else{
     return 0;
+  }
+}
+
+/** Summerar felen och skapar en 'integral'
+  * sparar värdet i int intgError
+  */
+void integrateError(int error){
+  intgError += error;
+}
+
+/** Kör motorerna utifrån felvärde mellan -1 och 1
+*/
+void driveMotors(int error){
+  if(error<0){
+    int motorValue = 255+(error*255);
+    analogWrite(leftMotorOut, motorValue);
+    analogWrite(rightMotorOut, 255);
+  }
+  if(error>0){
+    int motorValue = 255-(error*255);
+    analogWrite(leftMotorOut, 255);
+    analogWrite(rightMotorOut, motorValue);
   }
 }
