@@ -6,6 +6,7 @@ const int leftMotorOut = 10;
 const int rightMotorOut =11;
 const float integralConstant =0.1;
 const float errorConstant = 0.8;
+const int integLimit = 100;
 
 int intgError;
 
@@ -13,8 +14,8 @@ int intgError;
 // put function declarations here:
 int myFunction(int, int);
 int readSensors(int, int);
-void integrateError(float);
-void driveMotors(int);
+void integrateError(int);
+void driveMotors(float);
 float pI(int, int);
 float clamp(float, float, float);
 
@@ -33,7 +34,7 @@ void loop() {
 int error = readSensors(leftSensorIn, rightSensorIn);
 integrateError(error);
 float motorInput = pI(error, intgError);
-clamp(motorInput, -1.0, 1.0);
+motorInput = clamp(motorInput, -1.0, 1.0);
 driveMotors(motorInput);
 
 }
@@ -66,17 +67,19 @@ int readSensors(int leftSensor, int rightSensor){
   */
 void integrateError(int error){
   intgError += error;
+  if (intgError>integLimit){intgError = integLimit;}
+  if (intgError<-integLimit){intgError = -integLimit;}
 }
 
 /** Kör motorerna utifrån felvärde mellan -1 och 1
 */
-void driveMotors(int error){
+void driveMotors(float error){
   if(error<0){
     int motorValue = 255+(error*255);
     analogWrite(leftMotorOut, motorValue);
     analogWrite(rightMotorOut, 255);
   }
-  if(error>0){
+  else if(error>0){
     int motorValue = 255-(error*255);
     analogWrite(leftMotorOut, 255);
     analogWrite(rightMotorOut, motorValue);
@@ -96,7 +99,7 @@ void driveMotors(int error){
 
 /*Avrundar värden innom angivna gränser
 */
-float clamp(float value, float upperLimit, float lowerLimit){
+float clamp(float value, float lowerLimit, float upperLimit){
 if(value <= lowerLimit){
   return lowerLimit;
 }
