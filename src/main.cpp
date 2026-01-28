@@ -18,6 +18,7 @@ void integrateError(int);
 void driveMotors(float);
 float pI(int, int);
 float clamp(float, float, float);
+void printToSerial(int);
 
 void setup() {
   // put your setup code here, to run once:
@@ -36,7 +37,7 @@ integrateError(error);
 float motorInput = pI(error, intgError);
 motorInput = clamp(motorInput, -1.0, 1.0);
 driveMotors(motorInput);
-
+printToSerial(error);
 }
 
 // put function definitions here:
@@ -107,4 +108,10 @@ else if(value>upperLimit){
   return upperLimit;
 }
 else return value;
+}
+
+void printToSerial(int error){
+  Serial.println("error: "+ error);
+  Serial.println("inegral:"+intgError);
+
 }
