@@ -18,7 +18,7 @@ void integrateError(int);
 void driveMotors(float);
 float pI(int, int);
 float clamp(float, float, float);
-void printToSerial(int);
+void printToSerial(int,int);
 
 void setup() {
   // put your setup code here, to run once:
@@ -37,7 +37,7 @@ integrateError(error);
 float motorInput = pI(error, intgError);
 motorInput = clamp(motorInput, -1.0, 1.0);
 driveMotors(motorInput);
-printToSerial(error);
+printToSerial(error, motorInput);
 }
 
 // put function definitions here:
@@ -48,7 +48,7 @@ printToSerial(error);
 int readSensors(int leftSensor, int rightSensor){
   int leftSensorValue = digitalRead(leftSensor);
   int rightSensorValue = digitalRead(rightSensor);
-  if((leftSensorValue == HIGH) && (rightSensorValue == HIGH)){
+  if((leftSensorValue == LOW) && (rightSensorValue == LOW)){
     Serial.println("Fel! båda sensorerna ger positiv");
     return 0;
   }
@@ -110,8 +110,12 @@ else if(value>upperLimit){
 else return value;
 }
 
-void printToSerial(int error){
-  Serial.println("error: "+ error);
-  Serial.println("inegral:"+intgError);
+void printToSerial(int error, int motorValue){
+  Serial.println("error: ");
+  Serial.println(error);
+  Serial.println("inegral:");
+  Serial.println(intgError);
+  Serial.println("motorValue:");
+  Serial.println(motorValue);
 
 }
