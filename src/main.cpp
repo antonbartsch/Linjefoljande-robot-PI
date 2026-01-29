@@ -113,6 +113,7 @@ else if(value>upperLimit){
 else return value;
 }
 
+//Skriv ut värdena för error, integral, och slutgiltigt motorvärde
 void printToSerial(int error, float motorValue){
   Serial.println("error: ");
   Serial.println(error);
@@ -123,6 +124,7 @@ void printToSerial(int error, float motorValue){
 
 }
 
+//Går i sleepmode för att spara energi
 void deepSleep(int cykles){ //En cykle 8s
   for (int i = 0; i <cykles; i++){
     LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
