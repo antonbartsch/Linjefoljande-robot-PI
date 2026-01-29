@@ -1,14 +1,15 @@
 #include <Arduino.h>
+#include <LowPower.h>
 
 const int leftSensorIn =2;
 const int rightSensorIn =3;
 const int leftMotorOut = 10;
 const int rightMotorOut =11;
-const float integralConstant =0.1;
-const float errorConstant = 0.8;
-const int integLimit = 100;
+const float integralConstant =0;
+const float errorConstant = 1;
+const int integLimit = 10;
 
-int intgError;
+int intgError = 0;
 
 
 // put function declarations here:
@@ -18,7 +19,8 @@ void integrateError(int);
 void driveMotors(float);
 float pI(int, int);
 float clamp(float, float, float);
-void printToSerial(int,int);
+void printToSerial(int,float);
+void deepSleep(int);
 
 void setup() {
   // put your setup code here, to run once:
@@ -27,6 +29,7 @@ void setup() {
   pinMode(rightSensorIn, INPUT);
   pinMode(leftMotorOut, OUTPUT);
   pinMode(rightMotorOut, OUTPUT);
+  deepSleep(15);
 }
 
 void loop() {
@@ -48,7 +51,7 @@ printToSerial(error, motorInput);
 int readSensors(int leftSensor, int rightSensor){
   int leftSensorValue = digitalRead(leftSensor);
   int rightSensorValue = digitalRead(rightSensor);
-  if((leftSensorValue == LOW) && (rightSensorValue == LOW)){
+  if((leftSensorValue == 1) && (rightSensorValue == 1)){
     Serial.println("Fel! båda sensorerna ger positiv");
     return 0;
   }
@@ -110,7 +113,7 @@ else if(value>upperLimit){
 else return value;
 }
 
-void printToSerial(int error, int motorValue){
+void printToSerial(int error, float motorValue){
   Serial.println("error: ");
   Serial.println(error);
   Serial.println("inegral:");
@@ -118,4 +121,10 @@ void printToSerial(int error, int motorValue){
   Serial.println("motorValue:");
   Serial.println(motorValue);
 
+}
+
+void deepSleep(int cykles){ //En cykle 8s
+  for (int i = 0; i <cykles; i++){
+    LowPower.powerDown(SLEEP_8S, ADC_OFF, BOD_OFF);
+  }
 }
