@@ -3,11 +3,13 @@
 
 const int leftSensorIn =2;
 const int rightSensorIn =3;
-const int leftMotorOut = 10;
-const int rightMotorOut =11;
+const int leftMotorOut = 11;
+const int rightMotorOut =10;
 const float integralConstant =0;
 const float errorConstant = 1;
 const int integLimit = 10;
+const int sensor1PowerPin = 7;
+const int sensor2PowerPin = 8;
 
 int intgError = 0;
 
@@ -29,12 +31,13 @@ void setup() {
   pinMode(rightSensorIn, INPUT);
   pinMode(leftMotorOut, OUTPUT);
   pinMode(rightMotorOut, OUTPUT);
+  pinMode(sensor1PowerPin, OUTPUT);
+  pinMode(sensor2PowerPin, OUTPUT);
   deepSleep(15);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-
 int error = readSensors(leftSensorIn, rightSensorIn);
 integrateError(error);
 float motorInput = pI(error, intgError);
@@ -49,6 +52,8 @@ printToSerial(error, motorInput);
   * Returnerar: 1=höger, -1=vänster, 0=rakt fram 
   */
 int readSensors(int leftSensor, int rightSensor){
+  digitalWrite(sensor1PowerPin, HIGH);
+  digitalWrite(sensor2PowerPin, HIGH);
   int leftSensorValue = digitalRead(leftSensor);
   int rightSensorValue = digitalRead(rightSensor);
   if((leftSensorValue == 1) && (rightSensorValue == 1)){
@@ -64,6 +69,8 @@ int readSensors(int leftSensor, int rightSensor){
   else{
     return 0;
   }
+  digitalWrite(sensor1PowerPin, LOW);
+  digitalWrite(sensor2PowerPin, LOW);
 }
 
 /** Summerar felen och skapar en 'integral'
@@ -85,11 +92,11 @@ void driveMotors(float error){
   }
   else if(error>0){
     int motorValue = 255-(error*255);
-    analogWrite(leftMotorOut, 255);
+    analogWrite(leftMotorOut, 230);
     analogWrite(rightMotorOut, motorValue);
   }
   else{
-    analogWrite(leftMotorOut, 255);
+    analogWrite(leftMotorOut, 230);
     analogWrite(rightMotorOut, 255);
   }
 }
